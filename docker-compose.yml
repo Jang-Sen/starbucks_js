@@ -1,0 +1,9 @@
+services:
+  starbucks_js:
+    container_name: starbucks_js
+    image: postgres:latest
+    restart: always
+    ports:
+      - 5433:5432
+    env_file:
+      - docker.env
