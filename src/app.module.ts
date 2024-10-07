@@ -7,6 +7,7 @@ import { ProductModule } from './product/product.module';
 import { DbModule } from './db/db.module';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
+import { EmailModule } from './email/email.module';
 
 @Module({
   imports: [
@@ -17,6 +18,9 @@ import { AuthModule } from './auth/auth.module';
         POSTGRES_PASSWORD: Joi.string().required(),
         POSTGRES_PORT: Joi.number().required(),
         POSTGRES_DB: Joi.string().required(),
+        EMAIL_SERVICE: Joi.string().required(),
+        EMAIL_USER: Joi.string().required(),
+        EMAIL_PASSWORD: Joi.string().required(),
       }),
       envFilePath: 'docker.env', // 환경 변수 파일 경로 명시
     }),
@@ -24,6 +28,7 @@ import { AuthModule } from './auth/auth.module';
     DbModule,
     UserModule,
     AuthModule,
+    EmailModule,
   ],
   controllers: [AppController],
   providers: [AppService],
