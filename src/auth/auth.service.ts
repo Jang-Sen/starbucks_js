@@ -20,7 +20,7 @@ export class AuthService {
   // 회원가입 로직
   async create(dto: CreateUserDto) {
     const user = await this.userService.createUser(dto);
-    user.password = undefined; // 비밀번호 숨김
+    // user.password = undefined; // 비밀번호 숨김 -> validation 기능으로 뺌
 
     return user;
   }

@@ -10,7 +10,9 @@ import {
 import { ProductService } from '@product/product.service';
 import { CreateProductDto } from '@product/dto/create-product.dto';
 import { UpdateProductDto } from '@product/dto/update-product.dto';
+import { ApiBody, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('product')
 @Controller('product')
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
@@ -29,6 +31,7 @@ export class ProductController {
 
   // 등록 api
   @Post('/create')
+  @ApiBody({ type: CreateProductDto })
   async create(@Body() dto: CreateProductDto) {
     return await this.productService.create(dto);
   }
@@ -41,6 +44,7 @@ export class ProductController {
 
   // 수정 api
   @Put('/:id')
+  @ApiBody({ type: CreateProductDto })
   async update(@Param('id') id: string, @Body() dto: UpdateProductDto) {
     return await this.productService.update(id, dto);
   }

@@ -4,13 +4,17 @@ import { AuthService } from '@auth/auth.service';
 import { RequestUserInterface } from '@auth/interface/requestUser.interface';
 import { LocalAuthGuard } from '@auth/guard/local-auth.guard';
 import { TokenGuard } from '@auth/guard/token.guard';
+import { ApiBody, ApiTags } from '@nestjs/swagger';
+import { LoginUserDto } from '@user/dto/login-user.dto';
 
+@ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   // 회원가입 API
   @Post('/signup')
+  @ApiBody({ type: CreateUserDto })
   async signup(@Body() dto: CreateUserDto) {
     const user = await this.authService.create(dto);
     await this.authService.signupMail(user.email);
@@ -21,6 +25,7 @@ export class AuthController {
   // 로그인 API
   @Post('/login')
   @UseGuards(LocalAuthGuard)
+  @ApiBody({ type: LoginUserDto })
   async login(@Req() req: RequestUserInterface) {
     const user = req.user;
     const token = this.authService.generateToken(user.id);
