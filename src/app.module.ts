@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import * as Joi from '@hapi/joi';
-import { ProductModule } from './product/product.module';
-import { DbModule } from './db/db.module';
-import { UserModule } from './user/user.module';
-import { AuthModule } from './auth/auth.module';
-import { EmailModule } from './email/email.module';
+import { ProductModule } from '@product/product.module';
+import { DbModule } from '@db/db.module';
+import { UserModule } from '@user/user.module';
+import { AuthModule } from '@auth/auth.module';
+import { EmailModule } from '@email/email.module';
+import { AppController } from '@root/app.controller';
+import { AppService } from '@root/app.service';
 
 @Module({
   imports: [
@@ -21,6 +21,8 @@ import { EmailModule } from './email/email.module';
         EMAIL_SERVICE: Joi.string().required(),
         EMAIL_USER: Joi.string().required(),
         EMAIL_PASSWORD: Joi.string().required(),
+        TOKEN_SECRET: Joi.string().required(),
+        TOKEN_EXPIRATION_TIME: Joi.string().required(),
       }),
       envFilePath: 'docker.env', // 환경 변수 파일 경로 명시
     }),

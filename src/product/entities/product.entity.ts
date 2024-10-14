@@ -1,8 +1,8 @@
 import { Column, Entity } from 'typeorm';
-import { BaseEntity } from './base.entity';
+import { BaseEntity } from '@product/entities/base.entity';
 
 @Entity()
-export class Product extends BaseEntity{
+export class Product extends BaseEntity {
   @Column({ unique: true })
   public name: string;
 

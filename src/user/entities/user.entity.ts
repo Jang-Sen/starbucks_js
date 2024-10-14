@@ -1,7 +1,7 @@
 import { BeforeInsert, Column, Entity } from 'typeorm';
-import { BaseEntity } from '../../product/entities/base.entity';
 import * as bcrypt from 'bcryptjs';
 import * as gravatar from 'gravatar';
+import { BaseEntity } from '@product/entities/base.entity';
 
 @Entity()
 export class User extends BaseEntity {
