@@ -8,6 +8,7 @@ import { AuthModule } from '@auth/auth.module';
 import { EmailModule } from '@email/email.module';
 import { AppController } from '@root/app.controller';
 import { AppService } from '@root/app.service';
+import { RedisModule } from './redis/redis.module';
 
 @Module({
   imports: [
@@ -28,6 +29,9 @@ import { AppService } from '@root/app.service';
         GOOGLE_CALLBACK_URL: Joi.string().required(),
         KAKAO_CLIENT_ID: Joi.string().required(),
         KAKAO_CALLBACK_URL: Joi.string().required(),
+        REDIS_HOST: Joi.string().required(),
+        REDIS_PORT: Joi.number().required(),
+        REDIS_TTL: Joi.number().required(),
       }),
       envFilePath: 'docker.env', // 환경 변수 파일 경로 명시
     }),
@@ -36,6 +40,7 @@ import { AppService } from '@root/app.service';
     UserModule,
     AuthModule,
     EmailModule,
+    RedisModule,
   ],
   controllers: [AppController],
   providers: [AppService],

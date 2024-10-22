@@ -7,3 +7,11 @@ services:
       - 5433:5432
     env_file:
       - docker.env
+
+  starbucks_js_redis:
+    container_name: starbucks_js_redis
+    image: "redis:alpine"
+    env_file:
+      - docker.env
+    ports:
+      - 6381:6379

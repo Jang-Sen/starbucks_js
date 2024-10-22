@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
 import { UserService } from '@user/user.service';
 import { EmailService } from '@email/email.service';
@@ -8,6 +8,8 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { TokenInterface } from '@auth/interface/token.interface';
 import { Provider } from '@user/entities/provider.enum';
+import { CACHE_MANAGER } from '@nestjs/common/cache';
+import { Cache } from 'cache-manager';
 
 @Injectable()
 export class AuthService {
@@ -16,6 +18,7 @@ export class AuthService {
     private readonly userService: UserService,
     private readonly emailService: EmailService,
     private readonly jwtService: JwtService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
   ) {}
 
   // 회원가입 로직
@@ -68,5 +71,30 @@ export class AuthService {
       secret: this.configService.get('TOKEN_SECRET'),
       expiresIn: this.configService.get('TOKEN_EXPIRATION_TIME'),
     });
+  }
+
+  // 이메일 인증 로직
+  async sendEmailOTP(email: string) {
+    const otp = this.generateOTP();
+
+    // 캐시에 저장
+    await this.cacheManager.set(email, otp);
+
+    return await this.emailService.sendMail({
+      to: email,
+      subject: '회원님이 요청하신 인증 번호 입니다.',
+      text: `인증번호는 ${otp} 입니다. 감사합니다.`,
+    });
+  }
+
+  // 랜덤 번호 로직
+  generateOTP() {
+    let otp = '';
+
+    for (let i = 1; i <= 6; i++) {
+      otp += Math.floor(Math.random() * 10);
+    }
+
+    return otp;
   }
 }
