@@ -15,6 +15,7 @@ import { TokenGuard } from '@auth/guard/token.guard';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { LoginUserDto } from '@user/dto/login-user.dto';
 import { GoogleAuthGuard } from '@auth/guard/google-auth.guard';
+import { KakaoAuthGuard } from '@auth/guard/kakao-auth.guard';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -60,6 +61,23 @@ export class AuthController {
   @Get('/google/callback')
   @UseGuards(GoogleAuthGuard)
   async googleLoginCallback(@Req() req: RequestUserInterface) {
+    const user = req.user;
+    const token = this.authService.generateToken(user.id);
+
+    return { user, token };
+  }
+
+  // 카카오 로그인 API
+  @Get('/kakao')
+  @UseGuards(KakaoAuthGuard)
+  async kakaoLogin() {
+    return HttpStatus.OK;
+  }
+
+  // 카카오 로그인 콜백 API
+  @Get('/kakao/callback')
+  @UseGuards(KakaoAuthGuard)
+  async kakaoLoginCallback(@Req() req: RequestUserInterface) {
     const user = req.user;
     const token = this.authService.generateToken(user.id);
 

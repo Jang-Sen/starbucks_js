@@ -26,6 +26,8 @@ import { AppService } from '@root/app.service';
         GOOGLE_CLIENT_ID: Joi.string().required(),
         GOOGLE_CLIENT_SECRET: Joi.string().required(),
         GOOGLE_CALLBACK_URL: Joi.string().required(),
+        KAKAO_CLIENT_ID: Joi.string().required(),
+        KAKAO_CALLBACK_URL: Joi.string().required(),
       }),
       envFilePath: 'docker.env', // 환경 변수 파일 경로 명시
     }),
