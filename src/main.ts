@@ -6,6 +6,8 @@ import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  app.setGlobalPrefix('api'); // url에 api 추가
+
   // Swagger
   const config = new DocumentBuilder()
     .setTitle('Starbucks_js API')
@@ -13,7 +15,7 @@ async function bootstrap() {
     .setVersion('1.0')
     .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
+  SwaggerModule.setup('api-docs', app, document);
 
   // Validation
   app.useGlobalPipes(
@@ -24,7 +26,7 @@ async function bootstrap() {
   );
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
-  await app.listen(8012);
+  await app.listen(8000);
 }
 
 bootstrap();
