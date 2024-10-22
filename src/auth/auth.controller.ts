@@ -60,6 +60,9 @@ export class AuthController {
   @Get('/google/callback')
   @UseGuards(GoogleAuthGuard)
   async googleLoginCallback(@Req() req: RequestUserInterface) {
-    return req.user;
+    const user = req.user;
+    const token = this.authService.generateToken(user.id);
+
+    return { user, token };
   }
 }

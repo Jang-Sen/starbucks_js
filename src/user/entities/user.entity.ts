@@ -10,15 +10,15 @@ export class User extends BaseEntity {
   @Column()
   public username: string;
 
-  @Column()
+  @Column({ nullable: true })
   @Exclude()
-  public password: string;
+  public password?: string;
 
   @Column({ unique: true })
   public email: string;
 
-  @Column()
-  public phone: number;
+  @Column({ nullable: true })
+  public phone?: number;
 
   @Column({ nullable: true })
   public grade?: string;

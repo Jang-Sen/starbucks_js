@@ -7,6 +7,7 @@ import { LoginUserDto } from '@user/dto/login-user.dto';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { TokenInterface } from '@auth/interface/token.interface';
+import { Provider } from '@user/entities/provider.enum';
 
 @Injectable()
 export class AuthService {
@@ -19,10 +20,11 @@ export class AuthService {
 
   // 회원가입 로직
   async create(dto: CreateUserDto) {
-    const user = await this.userService.createUser(dto);
+    return await this.userService.createUser({
+      ...dto,
+      provider: Provider.LOCAL,
+    });
     // user.password = undefined; // 비밀번호 숨김 -> validation 기능으로 뺌
-
-    return user;
   }
 
   // 로그인 로직
