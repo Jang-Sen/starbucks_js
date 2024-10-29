@@ -12,7 +12,7 @@ import { AuthService } from '@auth/auth.service';
 import { RequestUserInterface } from '@auth/interface/requestUser.interface';
 import { LocalAuthGuard } from '@auth/guard/local-auth.guard';
 import { TokenGuard } from '@auth/guard/token.guard';
-import { ApiBody, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 import { LoginUserDto } from '@user/dto/login-user.dto';
 import { GoogleAuthGuard } from '@auth/guard/google-auth.guard';
 import { KakaoAuthGuard } from '@auth/guard/kakao-auth.guard';
@@ -47,6 +47,7 @@ export class AuthController {
   // 로그인 이후 토큰 기반으로 정보 조회 API
   @Get()
   @UseGuards(TokenGuard)
+  @ApiBearerAuth()
   async authenticate(@Req() req: RequestUserInterface) {
     return req.user;
   }
