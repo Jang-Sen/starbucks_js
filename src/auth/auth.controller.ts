@@ -16,6 +16,7 @@ import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { LoginUserDto } from '@user/dto/login-user.dto';
 import { GoogleAuthGuard } from '@auth/guard/google-auth.guard';
 import { KakaoAuthGuard } from '@auth/guard/kakao-auth.guard';
+import { NaverAuthGuard } from '@auth/guard/naver-auth.guard';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -78,6 +79,23 @@ export class AuthController {
   @Get('/kakao/callback')
   @UseGuards(KakaoAuthGuard)
   async kakaoLoginCallback(@Req() req: RequestUserInterface) {
+    const user = req.user;
+    const token = this.authService.generateToken(user.id);
+
+    return { user, token };
+  }
+
+  // 네이버 로그인 API
+  @Get('/naver')
+  @UseGuards(NaverAuthGuard)
+  async naverLogin() {
+    return HttpStatus.OK;
+  }
+
+  // 네이버 로그인 콜백 API
+  @Get('/naver/callback')
+  @UseGuards(NaverAuthGuard)
+  async naverLoginCallback(@Req() req: RequestUserInterface) {
     const user = req.user;
     const token = this.authService.generateToken(user.id);
 
