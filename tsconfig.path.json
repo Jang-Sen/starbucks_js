@@ -19,6 +19,15 @@
       ],
       "@user/*": [
         "./src/user/*"
+      ],
+      "@agree-of-term/*": [
+        "./src/agree-of-term/*"
+      ],
+      "@redis/*": [
+        "./src/redis/*"
+      ],
+      "@common/*": [
+        "./src/common/*"
       ]
     }
   }

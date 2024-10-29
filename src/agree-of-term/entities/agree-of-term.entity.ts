@@ -21,6 +21,6 @@ export class AgreeOfTerm {
   @Column({ default: false })
   public agreeOfEvent: boolean;
 
-  @OneToOne(() => User, (user: User) => user.agreeOfTerm)
+  @OneToOne(() => User, (user) => user.agreeOfTerm)
   public user: User;
 }
