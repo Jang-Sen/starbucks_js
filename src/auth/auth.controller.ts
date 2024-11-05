@@ -18,11 +18,16 @@ import { GoogleAuthGuard } from '@auth/guard/google-auth.guard';
 import { KakaoAuthGuard } from '@auth/guard/kakao-auth.guard';
 import { NaverAuthGuard } from '@auth/guard/naver-auth.guard';
 import { EmailDto } from '@user/dto/email.dto';
+import { UserService } from '@user/user.service';
+import { ChangePasswordDto } from '@user/dto/change-password.dto';
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly userService: UserService,
+  ) {}
 
   // 회원가입 API
   @Post('/signup')
@@ -53,10 +58,19 @@ export class AuthController {
     return req.user;
   }
 
-  // 이메일로 비밀번호 토큰 전송 API
+  // 이메일로 비밀번호 변경 토큰 전송 API
   @Post('/find/password')
   async findPassword(@Body() dto: EmailDto) {
     return await this.authService.findPasswordWithMail(dto.email);
+  }
+
+  // 비밀번호 변경 API
+  @Post('/change/password')
+  async changePassword(@Body() dto: ChangePasswordDto) {
+    return await this.userService.changePasswordWithToken(
+      dto.token,
+      dto.newPassword,
+    );
   }
 
   // 구글 로그인 API
