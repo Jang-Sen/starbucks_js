@@ -20,6 +20,7 @@ import { NaverAuthGuard } from '@auth/guard/naver-auth.guard';
 import { EmailDto } from '@user/dto/email.dto';
 import { UserService } from '@user/user.service';
 import { ChangePasswordDto } from '@user/dto/change-password.dto';
+import { RefreshTokenGuard } from '@auth/guard/refresh-token.guard';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -60,6 +61,16 @@ export class AuthController {
   @ApiBearerAuth()
   async authenticate(@Req() req: RequestUserInterface) {
     return req.user;
+  }
+
+  // access token 갱신 API
+  @Get('/refresh')
+  @UseGuards(RefreshTokenGuard)
+  @ApiBearerAuth()
+  async refresh(@Req() req: RequestUserInterface) {
+    const user = req.user;
+
+    return this.authService.generateToken(user.id);
   }
 
   // 이메일로 비밀번호 변경 토큰 전송 API

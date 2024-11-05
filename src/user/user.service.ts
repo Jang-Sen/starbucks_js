@@ -85,9 +85,31 @@ export class UserService {
   async saveRedisWithRefreshToken(userId: string, refreshToken: string) {
     // 토큰 암호화
     const genSalt = await bcrypt.genSalt(10);
+    // JWT 서명 부분 추출
+    // const tokenSignature = refreshToken.split('.')[2];
+    // JWT token의 경우 전체를 암호화 하는게 낫다 -> 서명 부분만 암호화할 경우, 토큰 위조 가능성 높음
     const hashedRefreshToken = await bcrypt.hash(refreshToken, genSalt);
 
     // Redis에 저장하기 위해 userId에 대한 암호화한 refresh token 넣기
     await this.cacheManager.set(userId, hashedRefreshToken);
+  }
+
+  // Redis에 담긴 Refresh Token & userId에 대한 Refresh Token 검증 로직
+  async matchedRefreshToken(userId: string, refreshToken: string) {
+    const user = await this.getUserBy('id', userId);
+    // console.log('user = ' + user);
+    const redisUserId = await this.cacheManager.get(user.id);
+    // console.log('redisUserId = ' + redisUserId);
+
+    // JWT 서명 부분 추출
+    // const tokenSignature = refreshToken.split('.')[2];
+    // console.log('tokenSignature = ' + tokenSignature);
+
+    // 비교
+    const result = await bcrypt.compare(refreshToken, redisUserId);
+
+    if (result) {
+      return user;
+    }
   }
 }
