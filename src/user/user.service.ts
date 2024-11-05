@@ -2,6 +2,7 @@ import {
   BadRequestException,
   HttpException,
   HttpStatus,
+  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -13,6 +14,8 @@ import { Provider } from '@user/entities/provider.enum';
 import * as bcrypt from 'bcryptjs';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { Cache } from 'cache-manager';
+import { CACHE_MANAGER } from '@nestjs/common/cache';
 
 @Injectable()
 export class UserService {
@@ -21,6 +24,8 @@ export class UserService {
     private repository: Repository<User>,
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
+    @Inject(CACHE_MANAGER)
+    private cacheManager: Cache,
   ) {}
 
   // 회원 등록 로직
@@ -74,5 +79,15 @@ export class UserService {
     }
 
     return 'Updated Password';
+  }
+
+  // Refresh Token을 Redis에 담는 로직
+  async saveRedisWithRefreshToken(userId: string, refreshToken: string) {
+    // 토큰 암호화
+    const genSalt = await bcrypt.genSalt(10);
+    const hashedRefreshToken = await bcrypt.hash(refreshToken, genSalt);
+
+    // Redis에 저장하기 위해 userId에 대한 암호화한 refresh token 넣기
+    await this.cacheManager.set(userId, hashedRefreshToken);
   }
 }

@@ -64,6 +64,16 @@ export class AuthService {
     });
   }
 
+  // Refresh Token 발행 로직
+  public generateRefreshToken(userId: string) {
+    const payload: TokenInterface = { userId };
+
+    return this.jwtService.sign(payload, {
+      secret: this.configService.get('REFRESH_TOKEN_SECRET'),
+      expiresIn: this.configService.get('REFRESH_TOKEN_EXPIRATION_TIME'),
+    });
+  }
+
   // 이메일로 비밀번호 변경 토큰 받는 로직
   async findPasswordWithMail(email: string) {
     const payload = { email };

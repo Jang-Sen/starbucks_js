@@ -45,9 +45,13 @@ export class AuthController {
   @ApiBody({ type: LoginUserDto })
   async login(@Req() req: RequestUserInterface) {
     const user = req.user;
-    const token = this.authService.generateToken(user.id);
+    const accessToken = this.authService.generateToken(user.id);
+    const refreshToken = this.authService.generateRefreshToken(user.id);
 
-    return { user, token };
+    // refresh token -> redis 담기
+    await this.userService.saveRedisWithRefreshToken(user.id, refreshToken);
+
+    return { user, accessToken, refreshToken };
   }
 
   // 로그인 이후 토큰 기반으로 정보 조회 API

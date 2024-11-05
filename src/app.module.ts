@@ -33,7 +33,10 @@ import { AgreeOfTermModule } from './agree-of-term/agree-of-term.module';
 
         TOKEN_SECRET: Joi.string().required(),
         TOKEN_EXPIRATION_TIME: Joi.string().required(),
+        REFRESH_TOKEN_SECRET: Joi.string().required(),
+        REFRESH_TOKEN_EXPIRATION_TIME: Joi.string().required(),
         FIND_PASSWORD_TOKEN: Joi.string().required(),
+        FIND_PASSWORD_EXPIRATION_TIME: Joi.string().required(),
 
         GOOGLE_CLIENT_ID: Joi.string().required(),
         GOOGLE_CLIENT_SECRET: Joi.string().required(),
