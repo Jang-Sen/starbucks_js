@@ -11,6 +11,7 @@ services:
   starbucks_js_redis:
     container_name: starbucks_js_redis
     image: "redis:alpine"
+    restart: always
     env_file:
       - docker.env
     ports:

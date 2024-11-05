@@ -20,11 +20,21 @@ import { AgreeOfTermModule } from './agree-of-term/agree-of-term.module';
         POSTGRES_PASSWORD: Joi.string().required(),
         POSTGRES_PORT: Joi.number().required(),
         POSTGRES_DB: Joi.string().required(),
+
+        REDIS_HOST: Joi.string().required(),
+        REDIS_PORT: Joi.number().required(),
+        REDIS_TTL: Joi.number().required(),
+
         EMAIL_SERVICE: Joi.string().required(),
         EMAIL_USER: Joi.string().required(),
         EMAIL_PASSWORD: Joi.string().required(),
+
+        EMAIL_BASE_FRONT_URL: Joi.string().required(),
+
         TOKEN_SECRET: Joi.string().required(),
         TOKEN_EXPIRATION_TIME: Joi.string().required(),
+        FIND_PASSWORD_TOKEN: Joi.string().required(),
+
         GOOGLE_CLIENT_ID: Joi.string().required(),
         GOOGLE_CLIENT_SECRET: Joi.string().required(),
         GOOGLE_CALLBACK_URL: Joi.string().required(),
@@ -33,9 +43,6 @@ import { AgreeOfTermModule } from './agree-of-term/agree-of-term.module';
         NAVER_CLIENT_ID: Joi.string().required(),
         NAVER_CLIENT_SECRET: Joi.string().required(),
         NAVER_CALLBACK_URL: Joi.string().required(),
-        REDIS_HOST: Joi.string().required(),
-        REDIS_PORT: Joi.number().required(),
-        REDIS_TTL: Joi.number().required(),
       }),
       envFilePath: 'docker.env', // 환경 변수 파일 경로 명시
     }),

@@ -17,6 +17,7 @@ import { LoginUserDto } from '@user/dto/login-user.dto';
 import { GoogleAuthGuard } from '@auth/guard/google-auth.guard';
 import { KakaoAuthGuard } from '@auth/guard/kakao-auth.guard';
 import { NaverAuthGuard } from '@auth/guard/naver-auth.guard';
+import { EmailDto } from '@user/dto/email.dto';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -50,6 +51,12 @@ export class AuthController {
   @ApiBearerAuth()
   async authenticate(@Req() req: RequestUserInterface) {
     return req.user;
+  }
+
+  // 이메일로 비밀번호 토큰 전송 API
+  @Post('/find/password')
+  async findPassword(@Body() dto: EmailDto) {
+    return await this.authService.findPasswordWithMail(dto.email);
   }
 
   // 구글 로그인 API

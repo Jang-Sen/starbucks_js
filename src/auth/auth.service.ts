@@ -54,15 +54,6 @@ export class AuthService {
     return user;
   }
 
-  // 회원가입 후 이메일로 메세지 보내는 로직
-  async signupMail(email: string) {
-    return await this.emailService.sendMail({
-      to: email,
-      subject: '안녕하세요. 스타벅스 장센점 입니다.',
-      text: '회원가입이 정상적으로 되었습니다. 감사합니다.',
-    });
-  }
-
   // AccessToken 발행 로직
   public generateToken(userId: string) {
     const load: TokenInterface = { userId };
@@ -70,6 +61,45 @@ export class AuthService {
     return this.jwtService.sign(load, {
       secret: this.configService.get('TOKEN_SECRET'),
       expiresIn: this.configService.get('TOKEN_EXPIRATION_TIME'),
+    });
+  }
+
+  // 이메일로 비밀번호 변경 토큰 받는 로직
+  async findPasswordWithMail(email: string) {
+    const payload = { email };
+    const user = await this.userService.getUserBy('email', email);
+
+    // 소셜 로그인은 사용 불가
+    if (user.provider !== Provider.LOCAL) {
+      throw new HttpException(
+        `소셜 로그인 계정은 사용할 수 없습니다.`,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    // 비밀번호 변경 토큰 생성
+    const token = this.jwtService.sign(payload, {
+      secret: this.configService.get('FIND_PASSWORD_TOKEN'),
+      expiresIn: this.configService.get('FIND_PASSWORD_EXPIRATION_TIME'),
+    });
+
+    // 비밀번호 변경을 위한 front url 주소 및 토큰
+    const url = `${this.configService.get('EMAIL_BASE_FRONT_URL')}/change/password?token=${token}`;
+
+    // 이메일로 url 보내기
+    await this.emailService.sendMail({
+      to: email,
+      subject: '안녕하세요. 비밀번호 변경 관련 이메일 입니다.',
+      text: `비밀번호 변경 주소: ${url}`,
+    });
+  }
+
+  // 회원가입 후 이메일로 메세지 보내는 로직
+  async signupMail(email: string) {
+    return await this.emailService.sendMail({
+      to: email,
+      subject: '안녕하세요. 스타벅스 장센점 입니다.',
+      text: '회원가입이 정상적으로 되었습니다. 감사합니다.',
     });
   }
 
