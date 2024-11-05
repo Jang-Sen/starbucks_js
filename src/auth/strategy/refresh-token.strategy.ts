@@ -16,16 +16,19 @@ export class RefreshTokenStrategy extends PassportStrategy(
     private readonly userService: UserService,
   ) {
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      jwtFromRequest: ExtractJwt.fromExtractors([
+        (req: Request) => {
+          return req.cookies.Refresh;
+        },
+        ExtractJwt.fromAuthHeaderAsBearerToken(),
+      ]),
       secretOrKey: configService.get('REFRESH_TOKEN_SECRET'),
       passReqToCallback: true, // Request 객체를 validate 메서드로 전달
     });
   }
 
   async validate(req: Request, payload: TokenInterface) {
-    const refreshToken = req.headers.authorization
-      ?.replace('Bearer', '')
-      .trim();
+    const refreshToken = req.cookies.Refresh;
 
     const user = await this.userService.matchedRefreshToken(
       payload.userId,
@@ -33,7 +36,7 @@ export class RefreshTokenStrategy extends PassportStrategy(
     );
 
     if (!user) {
-      throw new UnauthorizedException('유효하지 않은 Refresh Token 입니다.');
+      throw new UnauthorizedException('유효하지 않은 Token 입니다.');
     }
 
     return user;

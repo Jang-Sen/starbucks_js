@@ -41,6 +41,7 @@ export class AuthService {
         HttpStatus.NOT_FOUND,
       );
     }
+
     // 2. 비밀번호 매칭
     const pass = await bcrypt.compare(dto.password, user.password);
 
@@ -50,28 +51,43 @@ export class AuthService {
         HttpStatus.BAD_REQUEST,
       );
     }
+
     // 3. return user
     return user;
   }
 
   // AccessToken 발행 로직
-  public generateToken(userId: string) {
+  public generateToken(userId: string): {
+    token: string;
+    cookie: string;
+  } {
     const load: TokenInterface = { userId };
 
-    return this.jwtService.sign(load, {
+    const token = this.jwtService.sign(load, {
       secret: this.configService.get('TOKEN_SECRET'),
       expiresIn: this.configService.get('TOKEN_EXPIRATION_TIME'),
     });
+
+    const cookie = `Authentication=${token}; Path=/; Max-Age=${this.configService.get('TOKEN_EXPIRATION_TIME')}`;
+
+    return { token, cookie };
   }
 
   // Refresh Token 발행 로직
-  public generateRefreshToken(userId: string) {
+  public generateRefreshToken(userId: string): {
+    token: string;
+    cookie: string;
+  } {
     const payload: TokenInterface = { userId };
 
-    return this.jwtService.sign(payload, {
+    const token = this.jwtService.sign(payload, {
       secret: this.configService.get('REFRESH_TOKEN_SECRET'),
       expiresIn: this.configService.get('REFRESH_TOKEN_EXPIRATION_TIME'),
     });
+
+    const cookie = `Refresh=${token}; Path=/; Max-Age=${this.configService.get('REFRESH_TOKEN_EXPIRATION_TIME')}`;
+
+    return { token, cookie };
   }
 
   // 이메일로 비밀번호 변경 토큰 받는 로직

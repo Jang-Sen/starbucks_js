@@ -49,7 +49,7 @@ export class User extends BaseEntity {
         this.password = await bcrypt.hash(this.password, saltValue);
 
         // 프로필 사진 자동생성
-        gravatar.url(this.profileImg, {
+        this.profileImg = gravatar.url(this.profileImg, {
           s: '200',
           r: 'pg',
           d: 'mm',

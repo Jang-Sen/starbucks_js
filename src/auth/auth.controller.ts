@@ -5,6 +5,7 @@ import {
   HttpStatus,
   Post,
   Req,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import { CreateUserDto } from '@user/dto/create-user.dto';
@@ -21,6 +22,7 @@ import { EmailDto } from '@user/dto/email.dto';
 import { UserService } from '@user/user.service';
 import { ChangePasswordDto } from '@user/dto/change-password.dto';
 import { RefreshTokenGuard } from '@auth/guard/refresh-token.guard';
+import { Response } from 'express';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -44,15 +46,20 @@ export class AuthController {
   @Post('/login')
   @UseGuards(LocalAuthGuard)
   @ApiBody({ type: LoginUserDto })
-  async login(@Req() req: RequestUserInterface) {
+  async login(@Req() req: RequestUserInterface, @Res() res: Response) {
     const user = req.user;
-    const accessToken = this.authService.generateToken(user.id);
-    const refreshToken = this.authService.generateRefreshToken(user.id);
+    const { token: accessToken, cookie: accessCookie } =
+      this.authService.generateToken(user.id);
+    const { token: refreshToken, cookie: refreshCookie } =
+      this.authService.generateRefreshToken(user.id);
 
     // refresh token -> redis 담기
     await this.userService.saveRedisWithRefreshToken(user.id, refreshToken);
 
-    return { user, accessToken, refreshToken };
+    // token -> cookie에 담기
+    res.setHeader('Set-Cookie', [accessCookie, refreshCookie]);
+
+    res.send(user);
   }
 
   // 로그인 이후 토큰 기반으로 정보 조회 API
@@ -67,10 +74,14 @@ export class AuthController {
   @Get('/refresh')
   @UseGuards(RefreshTokenGuard)
   @ApiBearerAuth()
-  async refresh(@Req() req: RequestUserInterface) {
+  async refresh(@Req() req: RequestUserInterface, @Res() res: Response) {
     const user = req.user;
 
-    return this.authService.generateToken(user.id);
+    const { token, cookie } = this.authService.generateToken(user.id);
+
+    res.setHeader('Set-Cookie', [cookie]);
+
+    res.send(user);
   }
 
   // 이메일로 비밀번호 변경 토큰 전송 API
