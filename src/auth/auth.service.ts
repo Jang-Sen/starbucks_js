@@ -57,35 +57,62 @@ export class AuthService {
   }
 
   // AccessToken 발행 로직
-  public generateToken(userId: string): {
-    token: string;
-    cookie: string;
-  } {
-    const load: TokenInterface = { userId };
-
-    const token = this.jwtService.sign(load, {
-      secret: this.configService.get('TOKEN_SECRET'),
-      expiresIn: this.configService.get('TOKEN_EXPIRATION_TIME'),
-    });
-
-    const cookie = `Authentication=${token}; Path=/; Max-Age=${this.configService.get('TOKEN_EXPIRATION_TIME')}`;
-
-    return { token, cookie };
-  }
+  // public generateAccessToken(userId: string): {
+  //   token: string;
+  //   cookie: string;
+  // } {
+  //   const load: TokenInterface = { userId };
+  //
+  //   const token = this.jwtService.sign(load, {
+  //     secret: this.configService.get('TOKEN_SECRET'),
+  //     expiresIn: this.configService.get('TOKEN_EXPIRATION_TIME'),
+  //   });
+  //
+  //   const cookie = `Authentication=${token}; Path=/; Max-Age=${this.configService.get('TOKEN_EXPIRATION_TIME')}`;
+  //
+  //   return { token, cookie };
+  // }
 
   // Refresh Token 발행 로직
-  public generateRefreshToken(userId: string): {
+  // public generateRefreshToken(userId: string): {
+  //   token: string;
+  //   cookie: string;
+  // } {
+  //   const payload: TokenInterface = { userId };
+  //
+  //   const token = this.jwtService.sign(payload, {
+  //     secret: this.configService.get('REFRESH_TOKEN_SECRET'),
+  //     expiresIn: this.configService.get('REFRESH_TOKEN_EXPIRATION_TIME'),
+  //   });
+  //
+  //   const cookie = `Refresh=${token}; Path=/; Max-Age=${this.configService.get('REFRESH_TOKEN_EXPIRATION_TIME')}`;
+  //
+  //   return { token, cookie };
+  // }
+  // Token & Cookie 발행 로직
+  public generateToken(
+    userId: string,
+    tokenType: 'access' | 'refresh',
+  ): {
     token: string;
     cookie: string;
   } {
     const payload: TokenInterface = { userId };
-
+    const secret = this.configService.get(
+      tokenType === 'access' ? 'TOKEN_SECRET' : 'REFRESH_TOKEN_SECRET',
+    );
+    const expiresIn = this.configService.get(
+      tokenType === 'access'
+        ? 'TOKEN_EXPIRATION_TIME'
+        : 'REFRESH_TOKEN_EXPIRATION_TIME',
+    );
     const token = this.jwtService.sign(payload, {
-      secret: this.configService.get('REFRESH_TOKEN_SECRET'),
-      expiresIn: this.configService.get('REFRESH_TOKEN_EXPIRATION_TIME'),
+      secret,
+      expiresIn,
     });
 
-    const cookie = `Refresh=${token}; Path=/; Max-Age=${this.configService.get('REFRESH_TOKEN_EXPIRATION_TIME')}`;
+    const cookieName = tokenType === 'access' ? 'Authentication' : 'Refresh';
+    const cookie = `${cookieName}=${token}; Path=/; Max-Age=${expiresIn}`;
 
     return { token, cookie };
   }

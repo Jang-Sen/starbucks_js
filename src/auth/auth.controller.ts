@@ -49,9 +49,9 @@ export class AuthController {
   async login(@Req() req: RequestUserInterface, @Res() res: Response) {
     const user = req.user;
     const { token: accessToken, cookie: accessCookie } =
-      this.authService.generateToken(user.id);
+      this.authService.generateToken(user.id, 'access');
     const { token: refreshToken, cookie: refreshCookie } =
-      this.authService.generateRefreshToken(user.id);
+      this.authService.generateToken(user.id, 'refresh');
 
     // refresh token -> redis 담기
     await this.userService.saveRedisWithRefreshToken(user.id, refreshToken);
@@ -77,7 +77,7 @@ export class AuthController {
   async refresh(@Req() req: RequestUserInterface, @Res() res: Response) {
     const user = req.user;
 
-    const { token, cookie } = this.authService.generateToken(user.id);
+    const { token, cookie } = this.authService.generateToken(user.id, 'access');
 
     res.setHeader('Set-Cookie', [cookie]);
 
@@ -111,7 +111,7 @@ export class AuthController {
   @UseGuards(GoogleAuthGuard)
   async googleLoginCallback(@Req() req: RequestUserInterface) {
     const user = req.user;
-    const token = this.authService.generateToken(user.id);
+    const token = this.authService.generateToken(user.id, 'access');
 
     return { user, token };
   }
@@ -128,7 +128,7 @@ export class AuthController {
   @UseGuards(KakaoAuthGuard)
   async kakaoLoginCallback(@Req() req: RequestUserInterface) {
     const user = req.user;
-    const token = this.authService.generateToken(user.id);
+    const token = this.authService.generateToken(user.id, 'access');
 
     return { user, token };
   }
@@ -145,7 +145,7 @@ export class AuthController {
   @UseGuards(NaverAuthGuard)
   async naverLoginCallback(@Req() req: RequestUserInterface) {
     const user = req.user;
-    const token = this.authService.generateToken(user.id);
+    const token = this.authService.generateToken(user.id, 'access');
 
     return { user, token };
   }
