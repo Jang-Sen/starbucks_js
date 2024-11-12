@@ -1,18 +1,45 @@
 services:
-  starbucks_js:
-    container_name: starbucks_js
+  backend:
+    container_name: starbucks_js_backend
+    build:
+      dockerfile: Dockerfile
+      context: .
+      target: development
+    volumes:
+      - .:/usr/src/app
+    env_file:
+      - .env
+    command: npm run start:dev
+    ports:
+      - "${BACKEND_PORT}:${BACKEND_PORT}"
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - starbucks_js_network
+
+  postgres:
+    container_name: starbucks_js_postgres
     image: postgres:latest
     restart: always
     ports:
-      - 5433:5432
+      - "${POSTGRES_EXTERNAL_PORT}:${POSTGRES_PORT}"
     env_file:
-      - docker.env
+      - .env
+    networks:
+      - starbucks_js_network
 
-  starbucks_js_redis:
+  redis:
     container_name: starbucks_js_redis
     image: "redis:alpine"
     restart: always
-    env_file:
-      - docker.env
     ports:
-      - 6381:6379
+      - "${REDIS_EXTERNAL_PORT}:${REDIS_PORT}"
+    env_file:
+      - .env
+    networks:
+      - starbucks_js_network
+
+networks:
+  starbucks_js_network:
+    driver: bridge

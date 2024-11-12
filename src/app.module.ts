@@ -47,7 +47,7 @@ import { AgreeOfTermModule } from './agree-of-term/agree-of-term.module';
         NAVER_CLIENT_SECRET: Joi.string().required(),
         NAVER_CALLBACK_URL: Joi.string().required(),
       }),
-      envFilePath: 'docker.env', // 환경 변수 파일 경로 명시
+      envFilePath: '.env', // 환경 변수 파일 경로 명시
     }),
     ProductModule,
     DbModule,

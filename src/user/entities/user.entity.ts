@@ -1,7 +1,7 @@
 import { BeforeInsert, Column, Entity, JoinColumn, OneToOne } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
 import * as gravatar from 'gravatar';
-import { BaseEntity } from '@product/entities/base.entity';
+import { BaseEntity } from '@common/entities/base.entity';
 import { Exclude } from 'class-transformer';
 import { Provider } from '@user/entities/provider.enum';
 import { AgreeOfTerm } from '@root/agree-of-term/entities/agree-of-term.entity';
