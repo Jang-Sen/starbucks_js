@@ -1,4 +1,17 @@
 services:
+  nginx:
+    container_name: starbucks_js_nginx
+    image: nginx:stable-alpine
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/templates:/etc/nginx/templates
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - starbucks_js_network
+  
   backend:
     container_name: starbucks_js_backend
     build:
