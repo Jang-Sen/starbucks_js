@@ -5,6 +5,7 @@ import { BaseEntity } from '@common/entities/base.entity';
 import { Exclude } from 'class-transformer';
 import { Provider } from '@user/entities/provider.enum';
 import { AgreeOfTerm } from '@root/agree-of-term/entities/agree-of-term.entity';
+import { Role } from '@user/entities/role.enum';
 
 @Entity()
 export class User extends BaseEntity {
@@ -29,6 +30,9 @@ export class User extends BaseEntity {
 
   @Column({ type: 'enum', enum: Provider, default: Provider.LOCAL })
   public provider: Provider;
+
+  @Column({ type: 'enum', array: true, enum: Role, default: [Role.USER] })
+  public roles: Role[];
 
   @OneToOne(() => AgreeOfTerm, {
     eager: true,

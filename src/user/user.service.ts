@@ -36,6 +36,11 @@ export class UserService {
     return user;
   }
 
+  // 회원 조회
+  async getUser() {
+    return await this.repository.find();
+  }
+
   // 회원의 id나 email을 통해 정보 가져오는 로직
   async getUserBy(key: 'id' | 'email', value: string) {
     const user = await this.repository.findOneBy({ [key]: value });
