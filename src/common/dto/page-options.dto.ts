@@ -4,13 +4,19 @@ import { IsEnum, IsOptional } from 'class-validator';
 
 export class PageOptionsDto {
   @IsOptional()
+  @ApiPropertyOptional({
+    description: '검색어',
+  })
+  readonly keyword?: string;
+
+  @IsOptional()
   @IsEnum(Order)
   @ApiPropertyOptional({
     description: '정렬 기준(기본으로 오름차순)',
     enum: Order,
     default: Order.ASC,
   })
-  order?: Order = Order.ASC;
+  readonly order?: Order = Order.ASC;
 
   @IsOptional()
   // @IsInt()
@@ -18,7 +24,7 @@ export class PageOptionsDto {
     description: '현재 페이지',
     default: 1,
   })
-  page?: number = 1;
+  readonly page?: number = 1;
 
   @IsOptional()
   // @IsInt()
@@ -28,7 +34,7 @@ export class PageOptionsDto {
     maximum: 50,
     default: 10,
   })
-  take?: number = 10;
+  readonly take?: number = 10;
 
   get skip(): number {
     return (this.page - 1) * this.take;

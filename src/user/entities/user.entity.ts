@@ -32,6 +32,7 @@ export class User extends BaseEntity {
   public provider: Provider;
 
   @Column({ type: 'enum', array: true, enum: Role, default: [Role.USER] })
+  @Exclude()
   public roles: Role[];
 
   @OneToOne(() => AgreeOfTerm, {

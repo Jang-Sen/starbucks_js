@@ -1,9 +1,11 @@
-import { Controller, Get, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
 import { UserService } from '@user/user.service';
 import { ObjectIdDto } from '@common/dto/object-id.dto';
-import { ApiParam } from '@nestjs/swagger';
 import { RoleGuard } from '@auth/guard/role.guard';
 import { Role } from '@user/entities/role.enum';
+import { PageOptionsDto } from '@common/dto/page-options.dto';
+import { PageDto } from '@common/dto/page.dto';
+import { User } from '@user/entities/user.entity';
 
 @Controller('user')
 export class UserController {
@@ -12,14 +14,15 @@ export class UserController {
   // 유저 전체 조회
   @Get('/all')
   @UseGuards(RoleGuard([Role.SUPER_ADMIN, Role.ADMIN]))
-  async findUser() {
-    return await this.userService.getUser();
+  async findUser(
+    @Query() pageOptionsDto: PageOptionsDto,
+  ): Promise<PageDto<User>> {
+    return await this.userService.getUser(pageOptionsDto);
   }
 
   // id에 따른 유저 조회
   @Get('/:id')
   @UseGuards(RoleGuard([Role.SUPER_ADMIN, Role.ADMIN]))
-  @ApiParam(ObjectIdDto)
   async findUserById(@Param() { id }: ObjectIdDto) {
     return await this.userService.getUserBy('id', id);
   }
