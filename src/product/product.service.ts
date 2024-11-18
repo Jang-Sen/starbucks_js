@@ -4,6 +4,9 @@ import { Repository } from 'typeorm';
 import { Product } from '@product/entities/product.entity';
 import { CreateProductDto } from '@product/dto/create-product.dto';
 import { UpdateProductDto } from '@product/dto/update-product.dto';
+import { PageDto } from '@common/dto/page.dto';
+import { PageOptionsDto } from '@common/dto/page-options.dto';
+import { PageMetaDto } from '@common/dto/page-meta.dto';
 
 @Injectable()
 export class ProductService {
@@ -13,8 +16,20 @@ export class ProductService {
   ) {}
 
   // 전체 데이터 로직
-  async getAll() {
-    return this.repository.find();
+  async getAll(pageOptionsDto: PageOptionsDto): Promise<PageDto<Product>> {
+    // return this.repository.find();
+    const queryBuilder = this.repository.createQueryBuilder('product');
+    queryBuilder
+      .orderBy('product.createdAt', pageOptionsDto.order)
+      .take(pageOptionsDto.take)
+      .skip(pageOptionsDto.skip);
+
+    const itemCount = await queryBuilder.getCount();
+    const { entities } = await queryBuilder.getRawAndEntities();
+
+    const pageMetaDto = new PageMetaDto({ pageOptionsDto, itemCount });
+
+    return new PageDto(entities, pageMetaDto);
   }
 
   // 상세 데이터 로직
@@ -30,7 +45,7 @@ export class ProductService {
 
   // 등록 로직
   async create(dto: CreateProductDto) {
-    const product = await this.repository.create(dto);
+    const product = this.repository.create(dto);
     await this.repository.save(product);
 
     return product;

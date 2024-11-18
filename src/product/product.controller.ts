@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { ProductService } from '@product/product.service';
@@ -14,6 +15,9 @@ import { UpdateProductDto } from '@product/dto/update-product.dto';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { RoleGuard } from '@auth/guard/role.guard';
 import { Role } from '@user/entities/role.enum';
+import { PageDto } from '@common/dto/page.dto';
+import { Product } from '@product/entities/product.entity';
+import { PageOptionsDto } from '@common/dto/page-options.dto';
 
 @ApiTags('product')
 @Controller('product')
@@ -22,8 +26,10 @@ export class ProductController {
 
   // 전체 데이터 api
   @Get('/all')
-  async getAll() {
-    return await this.productService.getAll();
+  async getAll(
+    @Query() pageOptionsDto: PageOptionsDto,
+  ): Promise<PageDto<Product>> {
+    return await this.productService.getAll(pageOptionsDto);
   }
 
   // 상세 데이터 api

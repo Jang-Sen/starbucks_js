@@ -20,5 +20,5 @@ export class CreateProductDto {
 
   @ApiProperty()
   @IsString()
-  productImg: string;
+  productImg?: string;
 }
