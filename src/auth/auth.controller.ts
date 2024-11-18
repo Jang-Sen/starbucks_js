@@ -39,7 +39,7 @@ export class AuthController {
     const user = await this.authService.create(dto);
     await this.authService.signupMail(user.email);
 
-    return user;
+    return { user };
   }
 
   // 로그인 API
@@ -59,7 +59,7 @@ export class AuthController {
     // token -> cookie에 담기
     res.setHeader('Set-Cookie', [accessCookie, refreshCookie]);
 
-    res.send(user);
+    res.send({ user });
   }
 
   // 로그인 이후 토큰 기반으로 정보 조회 API
@@ -81,7 +81,7 @@ export class AuthController {
 
     res.setHeader('Set-Cookie', [cookie]);
 
-    res.send(user);
+    res.send({ user });
   }
 
   // 이메일로 비밀번호 변경 토큰 전송 API
@@ -109,11 +109,24 @@ export class AuthController {
   // 구글 로그인 콜백 API
   @Get('/google/callback')
   @UseGuards(GoogleAuthGuard)
-  async googleLoginCallback(@Req() req: RequestUserInterface) {
+  async googleLoginCallback(
+    @Req() req: RequestUserInterface,
+    @Res() res: Response,
+  ) {
     const user = req.user;
-    const token = this.authService.generateToken(user.id, 'access');
+    const { cookie: accessCookie } = this.authService.generateToken(
+      user.id,
+      'access',
+    );
+    const { token: refreshToken, cookie: refreshCookie } =
+      this.authService.generateToken(user.id, 'refresh');
 
-    return { user, token };
+    await this.userService.saveRedisWithRefreshToken(user.id, refreshToken);
+
+    res.setHeader('Set-Cookie', [accessCookie, refreshCookie]);
+
+    res.send({ user });
+    // return { user };
   }
 
   // 카카오 로그인 API
@@ -126,11 +139,23 @@ export class AuthController {
   // 카카오 로그인 콜백 API
   @Get('/kakao/callback')
   @UseGuards(KakaoAuthGuard)
-  async kakaoLoginCallback(@Req() req: RequestUserInterface) {
+  async kakaoLoginCallback(
+    @Req() req: RequestUserInterface,
+    @Res() res: Response,
+  ) {
     const user = req.user;
-    const token = this.authService.generateToken(user.id, 'access');
+    const { cookie: accessCookie } = this.authService.generateToken(
+      user.id,
+      'access',
+    );
+    const { token: refreshToken, cookie: refreshCookie } =
+      this.authService.generateToken(user.id, 'refresh');
 
-    return { user, token };
+    await this.userService.saveRedisWithRefreshToken(user.id, refreshToken);
+
+    res.setHeader('Set-Cookie', [accessCookie, refreshCookie]);
+
+    res.send({ user });
   }
 
   // 네이버 로그인 API
@@ -143,11 +168,23 @@ export class AuthController {
   // 네이버 로그인 콜백 API
   @Get('/naver/callback')
   @UseGuards(NaverAuthGuard)
-  async naverLoginCallback(@Req() req: RequestUserInterface) {
+  async naverLoginCallback(
+    @Req() req: RequestUserInterface,
+    @Res() res: Response,
+  ) {
     const user = req.user;
-    const token = this.authService.generateToken(user.id, 'access');
+    const { cookie: accessCookie } = this.authService.generateToken(
+      user.id,
+      'access',
+    );
+    const { token: refreshToken, cookie: refreshCookie } =
+      this.authService.generateToken(user.id, 'refresh');
 
-    return { user, token };
+    await this.userService.saveRedisWithRefreshToken(user.id, refreshToken);
+
+    res.setHeader('Set-Cookie', [accessCookie, refreshCookie]);
+
+    res.send({ user });
   }
 
   // 이메일로 인증번호 발송 API
