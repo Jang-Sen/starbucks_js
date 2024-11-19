@@ -4,12 +4,17 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { TransformInterceptor } from '@common/interceptor/transform.interceptor';
 import * as cookieParser from 'cookie-parser';
+import { ConfigService } from '@nestjs/config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.setGlobalPrefix('api'); // url에 api 추가
   app.use(cookieParser()); // cookie 사용
+
+  // port
+  const configService: ConfigService = app.get(ConfigService);
+  const port = configService.get('BACKEND_PORT');
 
   // Swagger
   const config = new DocumentBuilder()
@@ -33,7 +38,7 @@ async function bootstrap() {
   // Interceptor
   app.useGlobalInterceptors(new TransformInterceptor());
 
-  await app.listen(8000);
+  await app.listen(port);
 }
 
 bootstrap();
