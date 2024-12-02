@@ -22,6 +22,16 @@ export class ProductService {
   async getAll(pageOptionsDto: PageOptionsDto): Promise<PageDto<Product>> {
     // return this.repository.find();
     const queryBuilder = this.repository.createQueryBuilder('product');
+
+    if (pageOptionsDto.keyword) {
+      queryBuilder.andWhere(
+        `product.name LIKE :keyword OR product.category LIKE :keyword`,
+        {
+          keyword: `%${pageOptionsDto.keyword}%`,
+        },
+      );
+    }
+
     queryBuilder
       .orderBy('product.createdAt', pageOptionsDto.order)
       .take(pageOptionsDto.take)
