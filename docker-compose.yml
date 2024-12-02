@@ -31,6 +31,7 @@ services:
     depends_on:
       - postgres
       - redis
+      - minio
     networks:
       - starbucks_js_network
 
@@ -51,6 +52,17 @@ services:
     restart: always
     ports:
       - "${REDIS_EXTERNAL_PORT}:${REDIS_PORT}"
+    env_file:
+      - .env
+    networks:
+      - starbucks_js_network
+
+  minio:
+    container_name: starbucks_js_minio
+    image: bitnami/minio
+    ports:
+      - "${MINIO_PORT}:${MINIO_PORT}"
+      - "9001:9001"
     env_file:
       - .env
     networks:
