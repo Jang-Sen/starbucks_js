@@ -5,29 +5,32 @@
       "@root/*": [
         "./src/*"
       ],
-      "@db/*": [
-        "./src/db/*"
+      "@agree-of-term/*": [
+        "./src/agree-of-term/*"
       ],
       "@auth/*": [
         "./src/auth/*"
       ],
+      "@common/*": [
+        "./src/common/*"
+      ],
+      "@db/*": [
+        "./src/db/*"
+      ],
       "@email/*": [
         "./src/email/*"
+      ],
+      "@minio-client/*": [
+        "./src/minio-client/*"
       ],
       "@product/*": [
         "./src/product/*"
       ],
-      "@user/*": [
-        "./src/user/*"
-      ],
-      "@agree-of-term/*": [
-        "./src/agree-of-term/*"
-      ],
       "@redis/*": [
         "./src/redis/*"
       ],
-      "@common/*": [
-        "./src/common/*"
+      "@user/*": [
+        "./src/user/*"
       ]
     }
   }

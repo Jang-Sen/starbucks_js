@@ -10,6 +10,7 @@ import { AppController } from '@root/app.controller';
 import { AppService } from '@root/app.service';
 import { RedisModule } from './redis/redis.module';
 import { AgreeOfTermModule } from './agree-of-term/agree-of-term.module';
+import { MinioClientModule } from './minio-client/minio-client.module';
 
 @Module({
   imports: [
@@ -24,6 +25,12 @@ import { AgreeOfTermModule } from './agree-of-term/agree-of-term.module';
         REDIS_HOST: Joi.string().required(),
         REDIS_PORT: Joi.number().required(),
         REDIS_TTL: Joi.number().required(),
+
+        MINIO_ENDPOINT: Joi.string().required(),
+        MINIO_PORT: Joi.number().required(),
+        MINIO_ACCESS_KEY: Joi.string().required(),
+        MINIO_SECRET_KEY: Joi.string().required(),
+        MINIO_BUCKET: Joi.string().required(),
 
         EMAIL_SERVICE: Joi.string().required(),
         EMAIL_USER: Joi.string().required(),
@@ -56,6 +63,7 @@ import { AgreeOfTermModule } from './agree-of-term/agree-of-term.module';
     EmailModule,
     RedisModule,
     AgreeOfTermModule,
+    MinioClientModule,
   ],
   controllers: [AppController],
   providers: [AppService],
