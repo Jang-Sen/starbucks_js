@@ -7,10 +7,13 @@ import { UpdateProductDto } from '@product/dto/update-product.dto';
 import { PageDto } from '@common/dto/page.dto';
 import { PageOptionsDto } from '@common/dto/page-options.dto';
 import { PageMetaDto } from '@common/dto/page-meta.dto';
+import { BufferedFile } from '@minio-client/interface/file.model';
+import { MinioClientService } from '@minio-client/minio-client.service';
 
 @Injectable()
 export class ProductService {
   constructor(
+    private readonly minioClientService: MinioClientService,
     @InjectRepository(Product)
     private repository: Repository<Product>,
   ) {}
@@ -63,13 +66,25 @@ export class ProductService {
   }
 
   // 수정 로직
-  async update(id: string, dto: UpdateProductDto) {
-    const product = await this.repository.update(id, dto);
+  async update(id: string, dto: UpdateProductDto, imgs?: BufferedFile[]) {
+    const product = await this.getProductById(id);
+    const productImgsUrl = imgs.length
+      ? await this.minioClientService.uploadProductImgs(
+          product,
+          imgs,
+          'product',
+        )
+      : [];
+
+    const result = await this.repository.update(id, {
+      ...dto,
+      productImgs: productImgsUrl,
+    });
 
     if (!product) {
       throw new NotFoundException('제품을 찾을 수 없습니다.');
     }
 
-    return product;
+    return result;
   }
 }

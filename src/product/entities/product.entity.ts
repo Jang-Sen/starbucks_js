@@ -15,6 +15,9 @@ export class Product extends BaseEntity {
   @Column()
   public category: string;
 
-  @Column()
-  public productImg: string;
+  @Column({
+    type: 'simple-array',
+    nullable: true,
+  })
+  public productImgs?: string[];
 }

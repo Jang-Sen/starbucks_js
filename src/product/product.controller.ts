@@ -7,17 +7,21 @@ import {
   Post,
   Put,
   Query,
+  UploadedFiles,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ProductService } from '@product/product.service';
 import { CreateProductDto } from '@product/dto/create-product.dto';
 import { UpdateProductDto } from '@product/dto/update-product.dto';
-import { ApiBody, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 import { RoleGuard } from '@auth/guard/role.guard';
 import { Role } from '@user/entities/role.enum';
 import { PageDto } from '@common/dto/page.dto';
 import { Product } from '@product/entities/product.entity';
 import { PageOptionsDto } from '@common/dto/page-options.dto';
+import { FilesInterceptor } from '@nestjs/platform-express';
+import { BufferedFile } from '@minio-client/interface/file.model';
 
 @ApiTags('product')
 @Controller('product')
@@ -56,8 +60,30 @@ export class ProductController {
   // 수정 api
   @Put('/:id')
   @UseGuards(RoleGuard([Role.SUPER_ADMIN, Role.ADMIN]))
+  @UseInterceptors(FilesInterceptor('imgs'))
   @ApiBody({ type: CreateProductDto })
-  async update(@Param('id') id: string, @Body() dto: UpdateProductDto) {
-    return await this.productService.update(id, dto);
+  @ApiBody({
+    description: '제품 이미지 변경',
+    schema: {
+      type: 'object',
+      properties: {
+        imgs: {
+          type: 'array',
+          items: {
+            type: 'string',
+            format: 'binary',
+            description: 'productImgs',
+          },
+        },
+      },
+    },
+  })
+  @ApiConsumes('multipart/form-data')
+  async update(
+    @Param('id') id: string,
+    @Body() dto: UpdateProductDto,
+    @UploadedFiles() imgs?: BufferedFile[],
+  ) {
+    return await this.productService.update(id, dto, imgs);
   }
 }
