@@ -162,7 +162,10 @@ export class UserService {
     });
 
     if (!result.affected) {
-      throw new NotFoundException('회원을 찾을 수 없습니다.');
+      throw new HttpException(
+        '회원을 찾을 수 없습니다.',
+        HttpStatus.NO_CONTENT,
+      );
     }
 
     return '업데이트 완료';

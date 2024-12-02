@@ -29,6 +29,7 @@ export class MinioClientService {
     categoryName: string,
     baseBucket: string = this.baseBucket,
   ): Promise<string> {
+    // 파일의 이름 중 해당 파일이 아닐 경우, error
     if (
       !(
         file.mimetype.includes('jpg') ||
@@ -57,6 +58,15 @@ export class MinioClientService {
     const fileBuffer = file.buffer;
     const filePath = `${categoryName}/${user.id}/${filename}`;
 
+    // 기존 파일 존재 시, 해당되는 폴더 삭제
+    if (`${categoryName}/${user.id}`.includes(user.id)) {
+      await this.deleteFolderContents(
+        this.baseBucket,
+        `${categoryName}/${user.id}/`,
+      );
+    }
+
+    // 폴더에 파일 넣기
     await new Promise<void>((resolve, reject) => {
       this.client.putObject(
         baseBucket,
@@ -78,5 +88,24 @@ export class MinioClientService {
     });
 
     return `http://${this.configService.get('MINIO_ENDPOINT')}:${this.configService.get('MINIO_PORT')}/${this.configService.get('MINIO_BUCKET')}/${filePath}`;
+  }
+
+  //  파일 서버에 수정한 파일만 남겨두고 기존 파일 삭제
+  async deleteFolderContents(bucketName: string, folderPath: string) {
+    const objectList = [];
+    const stream = this.client.listObjects(bucketName, folderPath, true);
+
+    // 파일이 여러개일 경우, 전체 넣기
+    for await (const obj of stream) {
+      objectList.push(obj.name);
+    }
+
+    if (objectList.length > 0) {
+      const result = await this.client.removeObjects(bucketName, objectList);
+
+      console.log('삭제 성공: ' + result);
+    }
+
+    console.log('삭제할 파일 없음');
   }
 }
