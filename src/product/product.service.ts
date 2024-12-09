@@ -76,7 +76,11 @@ export class ProductService {
   }
 
   // 수정 로직
-  async update(id: string, dto: UpdateProductDto, imgs?: BufferedFile[]) {
+  async update(
+    id: string,
+    dto: UpdateProductDto,
+    imgs?: BufferedFile[],
+  ): Promise<Product> {
     const product = await this.getProductById(id);
     const productImgsUrl = imgs.length
       ? await this.minioClientService.uploadProductImgs(
@@ -86,7 +90,7 @@ export class ProductService {
         )
       : [];
 
-    const result = await this.repository.update(id, {
+    await this.repository.update(id, {
       ...dto,
       productImgs: productImgsUrl,
     });
@@ -95,6 +99,6 @@ export class ProductService {
       throw new NotFoundException('제품을 찾을 수 없습니다.');
     }
 
-    return result;
+    return await this.repository.findOneBy({ id });
   }
 }

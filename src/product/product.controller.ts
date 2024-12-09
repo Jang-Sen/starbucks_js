@@ -60,14 +60,14 @@ export class ProductController {
   // 수정 api
   @Put('/:id')
   @UseGuards(RoleGuard([Role.SUPER_ADMIN, Role.ADMIN]))
-  @UseInterceptors(FilesInterceptor('imgs'))
+  @UseInterceptors(FilesInterceptor('productImgs'))
   @ApiBody({ type: CreateProductDto })
   @ApiBody({
     description: '제품 이미지 변경',
     schema: {
       type: 'object',
       properties: {
-        imgs: {
+        productImgs: {
           type: 'array',
           items: {
             type: 'string',
