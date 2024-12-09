@@ -60,6 +60,9 @@ services:
   minio:
     container_name: starbucks_js_minio
     image: bitnami/minio
+    #    command: server --console-address ":9001"
+    environment:
+      MINIO_SERVER_URL: "http://${MINIO_ENDPOINT}:${MINIO_PORT}"
     ports:
       - "${MINIO_PORT}:${MINIO_PORT}"
       - "9001:9001"

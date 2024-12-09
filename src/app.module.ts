@@ -28,8 +28,10 @@ import { MinioClientModule } from './minio-client/minio-client.module';
 
         MINIO_ENDPOINT: Joi.string().required(),
         MINIO_PORT: Joi.number().required(),
-        MINIO_ACCESS_KEY: Joi.string().required(),
-        MINIO_SECRET_KEY: Joi.string().required(),
+        // MINIO_ACCESS_KEY: Joi.string().required(),
+        // MINIO_SECRET_KEY: Joi.string().required(),
+        MINIO_ROOT_USER: Joi.string().required(),
+        MINIO_ROOT_PASSWORD: Joi.string().required(),
         MINIO_BUCKET: Joi.string().required(),
 
         EMAIL_SERVICE: Joi.string().required(),
