@@ -5,6 +5,7 @@ import { User } from '@user/entities/user.entity';
 import { BufferedFile } from '@minio-client/interface/file.model';
 import * as crypto from 'crypto';
 import { Product } from '@product/entities/product.entity';
+import { Notice } from '@notice/entities/notice.entity';
 
 @Injectable()
 export class MinioClientService {
@@ -21,6 +22,95 @@ export class MinioClientService {
   ) {
     this.logger = new Logger('MinioClientService');
     this.baseBucket = this.configService.get('MINIO_BUCKET');
+  }
+
+  // 공지 여러 파일 등록
+  public async uploadNoticeFiles(
+    notice: Notice,
+    files: BufferedFile[],
+    categoryName: string,
+    baseBucket: string = this.baseBucket,
+  ): Promise<string[]> {
+    const uploadUrl: string[] = [];
+
+    if (files.length > 3) {
+      throw new HttpException(
+        '파일 첨부는 3개까지 가능',
+        HttpStatus.BAD_REQUEST,
+      );
+    } else {
+      // 기존 파일 존재 시, 해당되는 폴더 삭제
+      if (`${categoryName}/${notice.id}`.includes(notice.id)) {
+        await this.deleteFolderContents(
+          this.baseBucket,
+          `${categoryName}/${notice.id}/`,
+        );
+      }
+
+      // 파일의 이름 중 해당 파일이 아닐 경우 error
+      for (const file of files) {
+        if (
+          !(
+            file.mimetype.includes('jpg') ||
+            file.mimetype.includes('png') ||
+            file.mimetype.includes('jpeg') ||
+            file.mimetype.includes('pdf')
+          )
+        ) {
+          throw new HttpException(
+            '파일 업로드 중 에러 발생!: 해당 파일은 첨부 불가',
+            HttpStatus.BAD_REQUEST,
+          );
+        }
+        const temp_filename = Date.now().toString();
+        const hashFilename = crypto
+          .createHash('md5')
+          .update(temp_filename)
+          .digest('hex');
+
+        const ext = file.originalname.substring(
+          file.originalname.lastIndexOf('.'),
+          file.originalname.length,
+        );
+        const metaData = {
+          'Content-Type': file.mimetype,
+          'X-Amz-Meta-Testing': 1234,
+        };
+
+        const fileName = `${hashFilename}${ext}`;
+        const fileBuffer = file.buffer;
+        const filePath = `${categoryName}/${notice.id}/${fileName}`;
+
+        // 폴더에 파일 넣기
+        await new Promise<void>((resolve, reject) => {
+          this.client.putObject(
+            baseBucket,
+            filePath,
+            fileBuffer,
+            fileBuffer.length,
+            metaData,
+            (error) => {
+              if (error) {
+                console.log('Error File Upload! ' + error.message);
+                return reject(
+                  new HttpException(
+                    'Error Uploading File',
+                    HttpStatus.BAD_REQUEST,
+                  ),
+                );
+              }
+
+              resolve();
+            },
+          );
+        });
+
+        uploadUrl.push(
+          `http://${this.configService.get('MINIO_ENDPOINT')}:${this.configService.get('MINIO_PORT')}/${this.configService.get('MINIO_BUCKET')}/${filePath}`,
+        );
+      }
+      return uploadUrl;
+    }
   }
 
   // 제품 여러 사진 등록
@@ -51,7 +141,7 @@ export class MinioClientService {
         )
       ) {
         throw new HttpException(
-          '파일 업로드 중 에러 발생!',
+          '파일 업로드 중 에러 발생!: 해당 파일은 첨부 불가',
           HttpStatus.BAD_REQUEST,
         );
       }

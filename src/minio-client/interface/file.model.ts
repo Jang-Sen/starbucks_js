@@ -7,7 +7,11 @@ export interface BufferedFile {
   buffer: Buffer;
 }
 
-export type AppMimeType = 'image/png' | 'image/jpg' | 'image/jpeg';
+export type AppMimeType =
+  | 'image/png'
+  | 'image/jpg'
+  | 'image/jpeg'
+  | 'application/pdf';
 
 export interface HasFile {
   file: Buffer | string;

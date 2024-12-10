@@ -8,9 +8,10 @@ import { AuthModule } from '@auth/auth.module';
 import { EmailModule } from '@email/email.module';
 import { AppController } from '@root/app.controller';
 import { AppService } from '@root/app.service';
-import { RedisModule } from './redis/redis.module';
-import { AgreeOfTermModule } from './agree-of-term/agree-of-term.module';
-import { MinioClientModule } from './minio-client/minio-client.module';
+import { RedisModule } from '@redis/redis.module';
+import { AgreeOfTermModule } from '@agree-of-term/agree-of-term.module';
+import { MinioClientModule } from '@minio-client/minio-client.module';
+import { NoticeModule } from '@notice/notice.module';
 
 @Module({
   imports: [
@@ -66,6 +67,7 @@ import { MinioClientModule } from './minio-client/minio-client.module';
     RedisModule,
     AgreeOfTermModule,
     MinioClientModule,
+    NoticeModule,
   ],
   controllers: [AppController],
   providers: [AppService],
