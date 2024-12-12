@@ -67,7 +67,7 @@ export class NoticeController {
       properties: {
         files: {
           type: 'array',
-          description: '공지사항 파일들(3개 까지 첨부 가능)',
+          description: '공지사항 파일(5개 까지 첨부 가능)',
           items: {
             type: 'string',
             format: 'binary',

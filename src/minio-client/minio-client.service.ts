@@ -33,9 +33,9 @@ export class MinioClientService {
   ): Promise<string[]> {
     const uploadUrl: string[] = [];
 
-    if (files.length > 3) {
+    if (files.length > 5) {
       throw new HttpException(
-        '파일 첨부는 3개까지 가능',
+        '파일 첨부는 5개까지 가능',
         HttpStatus.BAD_REQUEST,
       );
     } else {
