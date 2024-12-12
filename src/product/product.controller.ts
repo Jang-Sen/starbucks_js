@@ -22,9 +22,11 @@ import { Product } from '@product/entities/product.entity';
 import { PageOptionsDto } from '@common/dto/page-options.dto';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { BufferedFile } from '@minio-client/interface/file.model';
+import { ThrottlerGuard } from '@nestjs/throttler';
 
 @ApiTags('product')
 @Controller('product')
+@UseGuards(ThrottlerGuard)
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 

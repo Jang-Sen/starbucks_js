@@ -12,6 +12,7 @@ import { RedisModule } from '@redis/redis.module';
 import { AgreeOfTermModule } from '@agree-of-term/agree-of-term.module';
 import { MinioClientModule } from '@minio-client/minio-client.module';
 import { NoticeModule } from '@notice/notice.module';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
   imports: [
@@ -59,6 +60,12 @@ import { NoticeModule } from '@notice/notice.module';
       }),
       envFilePath: '.env', // 환경 변수 파일 경로 명시
     }),
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000,
+        limit: 10,
+      },
+    ]),
     ProductModule,
     DbModule,
     UserModule,

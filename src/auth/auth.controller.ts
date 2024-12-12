@@ -23,9 +23,11 @@ import { UserService } from '@user/user.service';
 import { ChangePasswordDto } from '@user/dto/change-password.dto';
 import { RefreshTokenGuard } from '@auth/guard/refresh-token.guard';
 import { Response } from 'express';
+import { ThrottlerGuard } from '@nestjs/throttler';
 
 @ApiTags('auth')
 @Controller('auth')
+@UseGuards(ThrottlerGuard)
 export class AuthController {
   constructor(
     private readonly authService: AuthService,

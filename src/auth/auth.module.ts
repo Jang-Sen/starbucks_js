@@ -11,9 +11,23 @@ import { GoogleAuthStrategy } from '@auth/strategy/google-auth.strategy';
 import { KakaoAuthStrategy } from '@auth/strategy/kakao-auth.strategy';
 import { NaverAuthStrategy } from '@auth/strategy/naver-auth.strategy';
 import { RefreshTokenStrategy } from '@auth/strategy/refresh-token.strategy';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
-  imports: [ConfigModule, UserModule, EmailModule, JwtModule.register({})],
+  imports: [
+    ConfigModule,
+    UserModule,
+    EmailModule,
+    JwtModule.register({}),
+    ThrottlerModule.forRootAsync({
+      useFactory: () => [
+        {
+          ttl: 60000,
+          limit: 20,
+        },
+      ],
+    }),
+  ],
   controllers: [AuthController],
   providers: [
     AuthService,
