@@ -13,6 +13,7 @@ import { AgreeOfTermModule } from '@agree-of-term/agree-of-term.module';
 import { MinioClientModule } from '@minio-client/minio-client.module';
 import { NoticeModule } from '@notice/notice.module';
 import { ThrottlerModule } from '@nestjs/throttler';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -66,6 +67,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
         limit: 10,
       },
     ]),
+    ScheduleModule.forRoot({}),
     ProductModule,
     DbModule,
     UserModule,
