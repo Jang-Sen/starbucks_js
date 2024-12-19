@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
@@ -42,5 +43,19 @@ export class CommentController {
   })
   async findCommentByProduct(@Param('productId') productId: string) {
     return await this.commentService.findCommentByProductId(productId);
+  }
+
+  @Delete('/:commentId')
+  @UseGuards(TokenGuard)
+  @ApiParam({ name: 'commentId', description: '댓글 ID' })
+  @ApiOperation({
+    summary: '댓글 삭제',
+    description: '작성자 본인만 삭제 가능',
+  })
+  async deleteCommentOnlySelf(
+    @Req() req: RequestUserInterface,
+    @Param('commentId') commentId: string,
+  ) {
+    return await this.commentService.deleteComment(req.user, commentId);
   }
 }
