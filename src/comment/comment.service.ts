@@ -9,6 +9,7 @@ import { Repository } from 'typeorm';
 import { User } from '@user/entities/user.entity';
 import { CreateCommentDto } from '@comment/dto/create-comment.dto';
 import { ProductService } from '@product/product.service';
+import { UpdateCommentDto } from '@comment/dto/update-comment.dto';
 
 @Injectable()
 export class CommentService {
@@ -82,5 +83,34 @@ export class CommentService {
     await this.repository.remove(comment);
 
     return '삭제 완료';
+  }
+
+  // 수정
+  async updateComment(
+    user: User,
+    commentId: string,
+    updateCommentDto: UpdateCommentDto,
+  ): Promise<string> {
+    const comment = await this.repository.findOne({
+      where: {
+        id: commentId,
+      },
+      relations: {
+        user: true,
+      },
+    });
+
+    if (!comment) {
+      throw new NotFoundException('댓글을 찾을 수 없습니다.');
+    }
+
+    if (comment.user.id !== user.id) {
+      throw new ForbiddenException('본인이 작성한 댓글만 수정 가능합니다.');
+    }
+
+    Object.assign(comment, updateCommentDto);
+    await this.repository.save(comment);
+
+    return '수정 완료';
   }
 }
