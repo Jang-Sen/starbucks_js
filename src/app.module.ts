@@ -14,6 +14,7 @@ import { MinioClientModule } from '@minio-client/minio-client.module';
 import { NoticeModule } from '@notice/notice.module';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { ScheduleModule } from '@nestjs/schedule';
+import { CommentModule } from '@comment/comment.module';
 
 @Module({
   imports: [
@@ -77,6 +78,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     AgreeOfTermModule,
     MinioClientModule,
     NoticeModule,
+    CommentModule,
   ],
   controllers: [AppController],
   providers: [AppService],

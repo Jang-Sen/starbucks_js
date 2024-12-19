@@ -11,6 +11,9 @@
       "@auth/*": [
         "./src/auth/*"
       ],
+      "@comment/*": [
+        "./src/comment/*"
+      ],
       "@common/*": [
         "./src/common/*"
       ],
