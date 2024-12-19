@@ -55,6 +55,7 @@ export class UserService {
     }
 
     queryBuilder
+      .leftJoinAndSelect('user.comments', 'comment')
       .leftJoinAndSelect('user.agreeOfTerm', 'agreeOfTerm')
       .orderBy('user.createdAt', pageOptionsDto.order)
       .take(pageOptionsDto.take)

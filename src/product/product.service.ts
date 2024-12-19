@@ -33,6 +33,7 @@ export class ProductService {
     }
 
     queryBuilder
+      .leftJoinAndSelect('product.comments', 'comment')
       .orderBy('product.createdAt', pageOptionsDto.order)
       .take(pageOptionsDto.take)
       .skip(pageOptionsDto.skip);

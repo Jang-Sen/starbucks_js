@@ -21,5 +21,6 @@ import { ThrottlerModule } from '@nestjs/throttler';
   ],
   controllers: [ProductController],
   providers: [ProductService],
+  exports: [ProductService],
 })
 export class ProductModule {}
