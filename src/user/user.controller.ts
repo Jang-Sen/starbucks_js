@@ -22,8 +22,9 @@ import { RequestUserInterface } from '@auth/interface/requestUser.interface';
 import { UpdateUserDto } from '@user/dto/update-user.dto';
 import { BufferedFile } from '@minio-client/interface/file.model';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiBody, ApiConsumes } from '@nestjs/swagger';
+import { ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('User')
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}

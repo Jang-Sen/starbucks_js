@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Comment } from '@comment/entities/comment.entity';
 import { Repository } from 'typeorm';
@@ -31,5 +31,28 @@ export class CommentService {
     await this.repository.save(comment);
 
     return comment;
+  }
+
+  // 조회(제품 ID)
+  async findCommentByProductId(productId: string) {
+    const product = await this.productService.getProductById(productId);
+
+    const comments = await this.repository.find({
+      where: {
+        product: {
+          id: product.id,
+        },
+      },
+      relations: {
+        user: true,
+        product: true,
+      },
+    });
+
+    if (!comments) {
+      throw new NotFoundException('댓글을 찾을 수 없습니다.');
+    }
+
+    return comments;
   }
 }
