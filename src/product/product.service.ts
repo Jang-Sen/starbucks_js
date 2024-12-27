@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Product } from '@product/entities/product.entity';
@@ -9,6 +9,8 @@ import { PageOptionsDto } from '@common/dto/page-options.dto';
 import { PageMetaDto } from '@common/dto/page-meta.dto';
 import { BufferedFile } from '@minio-client/interface/file.model';
 import { MinioClientService } from '@minio-client/minio-client.service';
+import { CACHE_MANAGER } from '@nestjs/common/cache';
+import { Cache } from 'cache-manager';
 
 @Injectable()
 export class ProductService {
@@ -16,11 +18,15 @@ export class ProductService {
     private readonly minioClientService: MinioClientService,
     @InjectRepository(Product)
     private repository: Repository<Product>,
+    @Inject(CACHE_MANAGER)
+    private readonly cacheManager: Cache,
   ) {}
 
   // 전체 데이터 로직
   async getAll(pageOptionsDto: PageOptionsDto): Promise<PageDto<Product>> {
     // return this.repository.find();
+
+    const redisProduct = await this.cacheManager.get('product');
     const queryBuilder = this.repository.createQueryBuilder('product');
 
     if (pageOptionsDto.keyword) {
@@ -43,7 +49,14 @@ export class ProductService {
 
     const pageMetaDto = new PageMetaDto({ pageOptionsDto, itemCount });
 
-    return new PageDto(entities, pageMetaDto);
+    if (redisProduct) {
+      console.log('Redis에 저장된 데이터');
+      return new PageDto(redisProduct, pageMetaDto);
+    } else {
+      console.log('DB에 저장된 데이터 출력 및 Redis에 저장');
+      await this.cacheManager.set('product', entities);
+      return new PageDto(entities, pageMetaDto);
+    }
   }
 
   // 상세 데이터 로직
@@ -61,6 +74,8 @@ export class ProductService {
   async create(dto: CreateProductDto) {
     const product = this.repository.create(dto);
     await this.repository.save(product);
+
+    await this.cacheManager.del('product');
 
     return product;
   }
