@@ -15,6 +15,7 @@ import { NoticeModule } from '@notice/notice.module';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { ScheduleModule } from '@nestjs/schedule';
 import { CommentModule } from '@comment/comment.module';
+import { MovieModule } from '@movie/movie.module';
 
 @Module({
   imports: [
@@ -59,6 +60,9 @@ import { CommentModule } from '@comment/comment.module';
         NAVER_CLIENT_ID: Joi.string().required(),
         NAVER_CLIENT_SECRET: Joi.string().required(),
         NAVER_CALLBACK_URL: Joi.string().required(),
+
+        MOVIE_TOKEN: Joi.string().required(),
+        MOVIE_URL: Joi.string().required(),
       }),
       envFilePath: '.env', // 환경 변수 파일 경로 명시
     }),
@@ -79,6 +83,7 @@ import { CommentModule } from '@comment/comment.module';
     MinioClientModule,
     NoticeModule,
     CommentModule,
+    MovieModule,
   ],
   controllers: [AppController],
   providers: [AppService],

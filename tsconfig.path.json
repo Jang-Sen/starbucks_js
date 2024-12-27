@@ -26,6 +26,9 @@
       "@minio-client/*": [
         "./src/minio-client/*"
       ],
+      "@movie/*": [
+        "./src/movie/*"
+      ],
       "@notice/*": [
         "./src/notice/*"
       ],
