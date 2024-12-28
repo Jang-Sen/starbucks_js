@@ -15,8 +15,8 @@ export class MovieService {
   ) {}
 
   // 등록 로직
-  async createMovie() {
-    const tmdbUrl = `${this.configService.get('MOVIE_URL')}/now_playing?language=en-US&page=1`;
+  async createMovie(region: string, language?: string, page?: number) {
+    const tmdbUrl = `${this.configService.get('MOVIE_URL')}/${region}?language=${language}&page=${page}`;
 
     const config = {
       headers: {
