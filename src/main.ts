@@ -13,7 +13,7 @@ import { ConfigService } from '@nestjs/config';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  app.setGlobalPrefix('api'); // url에 api 추가
+  // app.setGlobalPrefix('api'); // url에 api 추가
   app.use(cookieParser()); // cookie 사용
 
   // url versioning

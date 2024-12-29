@@ -26,7 +26,7 @@ export class ProductService {
   async getAll(pageOptionsDto: PageOptionsDto): Promise<PageDto<Product>> {
     // return this.repository.find();
 
-    const redisProduct = await this.cacheManager.get('product');
+    const redisProduct: any = await this.cacheManager.get('product');
     const queryBuilder = this.repository.createQueryBuilder('product');
 
     if (pageOptionsDto.keyword) {

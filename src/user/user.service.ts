@@ -131,7 +131,7 @@ export class UserService {
   async matchedRefreshToken(userId: string, refreshToken: string) {
     const user = await this.getUserBy('id', userId);
     // console.log('user = ' + user);
-    const redisUserId = await this.cacheManager.get(user.id);
+    const redisUserId: any = await this.cacheManager.get(user.id);
     // console.log('redisUserId = ' + redisUserId);
 
     // JWT 서명 부분 추출
