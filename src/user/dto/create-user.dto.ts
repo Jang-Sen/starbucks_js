@@ -1,30 +1,31 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsNumber, IsString } from 'class-validator';
+import { IsEmail, IsNumber, IsOptional, IsString } from 'class-validator';
 import { Provider } from '@user/entities/provider.enum';
 import { AgreeOfTerm } from '@root/agree-of-term/entities/agree-of-term.entity';
 import { CreateAgreeOfTermDto } from '@root/agree-of-term/dto/create-agree-of-term.dto';
 
 export class CreateUserDto {
-  @ApiProperty()
   @IsString()
+  @ApiProperty({ example: '홍길동' })
   username: string;
 
-  @ApiProperty()
   @IsString()
+  @ApiProperty({ example: '123456a!' })
   password?: string;
 
-  @ApiProperty()
   @IsEmail()
+  @ApiProperty({ example: 'dh789521@gmail.com' })
   email: string;
 
-  @ApiProperty()
   @IsNumber()
+  @ApiProperty()
   phone?: number;
 
   @IsString()
   provider?: Provider;
 
   @IsString()
+  @IsOptional()
   profileImg?: string;
 
   @ApiProperty({ type: CreateAgreeOfTermDto })
