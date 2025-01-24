@@ -15,6 +15,7 @@ async function bootstrap() {
 
   // app.setGlobalPrefix('api'); // url에 api 추가
   app.use(cookieParser()); // cookie 사용
+  app.enableCors(); // 허용된 ip 만 접속 가능하도록 설정
 
   // url versioning
   app.enableVersioning({
@@ -31,6 +32,7 @@ async function bootstrap() {
     .setTitle('Starbucks_js API')
     .setDescription('Starbucks_js API Description')
     .addBearerAuth()
+    .addServer('/api')
     .setVersion('1.0')
     .build();
   const document = SwaggerModule.createDocument(app, config);
