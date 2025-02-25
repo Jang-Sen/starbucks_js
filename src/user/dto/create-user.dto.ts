@@ -3,6 +3,7 @@ import { IsEmail, IsNumber, IsOptional, IsString } from 'class-validator';
 import { Provider } from '@user/entities/provider.enum';
 import { AgreeOfTerm } from '@root/agree-of-term/entities/agree-of-term.entity';
 import { CreateAgreeOfTermDto } from '@root/agree-of-term/dto/create-agree-of-term.dto';
+import { Type } from 'class-transformer';
 
 export class CreateUserDto {
   @IsString()
@@ -18,6 +19,7 @@ export class CreateUserDto {
   email: string;
 
   @IsNumber()
+  @Type(() => Number)
   @ApiProperty()
   phone?: number;
 
