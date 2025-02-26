@@ -1,4 +1,10 @@
-import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
 import { UserService } from '@user/user.service';
 import { EmailService } from '@email/email.service';
@@ -168,6 +174,19 @@ export class AuthService {
       subject: '회원님이 요청하신 인증 번호 입니다.',
       text: `인증번호는 ${otp} 입니다. 감사합니다.`,
     });
+  }
+
+  // 이메일 인증 확인 로직
+  async checkEmailOTP(email: string, code: string): Promise<boolean> {
+    const codeFromRedis = await this.cacheManager.get(email);
+
+    if (codeFromRedis !== code) {
+      throw new BadRequestException('인증 번호가 일치하지 않습니다.');
+    }
+
+    await this.cacheManager.del(email);
+
+    return true;
   }
 
   // 랜덤 번호 로직

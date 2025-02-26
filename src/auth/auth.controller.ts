@@ -13,7 +13,13 @@ import { AuthService } from '@auth/auth.service';
 import { RequestUserInterface } from '@auth/interface/requestUser.interface';
 import { LocalAuthGuard } from '@auth/guard/local-auth.guard';
 import { TokenGuard } from '@auth/guard/token.guard';
-import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import { LoginUserDto } from '@user/dto/login-user.dto';
 import { GoogleAuthGuard } from '@auth/guard/google-auth.guard';
 import { KakaoAuthGuard } from '@auth/guard/kakao-auth.guard';
@@ -36,7 +42,9 @@ export class AuthController {
 
   // 회원가입 API
   @Post('/signup')
+  @ApiOperation({ summary: '회원가입' })
   @ApiBody({ type: CreateUserDto })
+  @ApiConsumes('application/x-www-form-urlencoded')
   async signup(@Body() dto: CreateUserDto) {
     const user = await this.authService.create(dto);
     await this.authService.signupMail(user.email);
@@ -47,7 +55,9 @@ export class AuthController {
   // 로그인 API
   @Post('/login')
   @UseGuards(LocalAuthGuard)
+  @ApiOperation({ summary: '로그인' })
   @ApiBody({ type: LoginUserDto })
+  @ApiConsumes('application/x-www-form-urlencoded')
   async login(@Req() req: RequestUserInterface, @Res() res: Response) {
     const user = req.user;
     const { token: accessToken, cookie: accessCookie } =
@@ -61,12 +71,13 @@ export class AuthController {
     // token -> cookie에 담기
     res.setHeader('Set-Cookie', [accessCookie, refreshCookie]);
 
-    res.send({ user });
+    res.send({ user, accessToken });
   }
 
   // 로그인 이후 토큰 기반으로 정보 조회 API
   @Get()
   @UseGuards(TokenGuard)
+  @ApiOperation({ summary: '정보 조회' })
   @ApiBearerAuth()
   async authenticate(@Req() req: RequestUserInterface) {
     return req.user;
@@ -75,6 +86,7 @@ export class AuthController {
   // access token 갱신 API
   @Get('/refresh')
   @UseGuards(RefreshTokenGuard)
+  @ApiOperation({ summary: 'Access Token 갱신' })
   @ApiBearerAuth()
   async refresh(@Req() req: RequestUserInterface, @Res() res: Response) {
     const user = req.user;
@@ -88,12 +100,16 @@ export class AuthController {
 
   // 이메일로 비밀번호 변경 토큰 전송 API
   @Post('/find/password')
+  @ApiOperation({ summary: '비밀번호 변경 메일 발송' })
+  @ApiConsumes('application/x-www-form-urlencoded')
   async findPassword(@Body() dto: EmailDto) {
     return await this.authService.findPasswordWithMail(dto.email);
   }
 
   // 비밀번호 변경 API
   @Post('/change/password')
+  @ApiOperation({ summary: '비밀번호 변경' })
+  @ApiConsumes('application/x-www-form-urlencoded')
   async changePassword(@Body() dto: ChangePasswordDto) {
     return await this.userService.changePasswordWithToken(
       dto.token,
@@ -104,6 +120,7 @@ export class AuthController {
   // 구글 로그인 API
   @Get('/google')
   @UseGuards(GoogleAuthGuard)
+  @ApiOperation({ summary: '구글 로그인' })
   async googleLogin() {
     return HttpStatus.OK;
   }
@@ -111,6 +128,7 @@ export class AuthController {
   // 구글 로그인 콜백 API
   @Get('/google/callback')
   @UseGuards(GoogleAuthGuard)
+  @ApiOperation({ summary: '구글 로그인 콜백' })
   async googleLoginCallback(
     @Req() req: RequestUserInterface,
     @Res() res: Response,
@@ -134,6 +152,7 @@ export class AuthController {
   // 카카오 로그인 API
   @Get('/kakao')
   @UseGuards(KakaoAuthGuard)
+  @ApiOperation({ summary: '카카오 로그인' })
   async kakaoLogin() {
     return HttpStatus.OK;
   }
@@ -141,6 +160,7 @@ export class AuthController {
   // 카카오 로그인 콜백 API
   @Get('/kakao/callback')
   @UseGuards(KakaoAuthGuard)
+  @ApiOperation({ summary: '카카오 로그인 콜백' })
   async kakaoLoginCallback(
     @Req() req: RequestUserInterface,
     @Res() res: Response,
@@ -163,6 +183,7 @@ export class AuthController {
   // 네이버 로그인 API
   @Get('/naver')
   @UseGuards(NaverAuthGuard)
+  @ApiOperation({ summary: '네이버 로그인' })
   async naverLogin() {
     return HttpStatus.OK;
   }
@@ -170,6 +191,7 @@ export class AuthController {
   // 네이버 로그인 콜백 API
   @Get('/naver/callback')
   @UseGuards(NaverAuthGuard)
+  @ApiOperation({ summary: '네이버 로그인 콜백' })
   async naverLoginCallback(
     @Req() req: RequestUserInterface,
     @Res() res: Response,
@@ -191,7 +213,18 @@ export class AuthController {
 
   // 이메일로 인증번호 발송 API
   @Post('/email/send')
+  @ApiOperation({ summary: '이메일 인증번호 발송' })
   async emailOTP(@Body('email') email: string) {
     return await this.authService.sendEmailOTP(email);
+  }
+
+  // 이메일 인증 확인 API
+  @Post('/email/check')
+  @ApiOperation({ summary: '이메일 인증 확인' })
+  async checkEmailOTP(
+    @Body('email') email: string,
+    @Body('code') code: string,
+  ): Promise<boolean> {
+    return await this.authService.checkEmailOTP(email, code);
   }
 }
